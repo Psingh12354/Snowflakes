@@ -30,3 +30,24 @@ A columnar database is a database management system (DBMS) that stores data in c
 ### AWS VS SNOWFLAKES
 
 Snowflake is different from AWS in the sense that it does not provide a comprehensive set of services. Snowflake is a relational database management system (RDBMS) that can be used to store data. AWS, on the other hand, provides a wide range of services, such as compute, storage, networking, and applications.
+
+### Data loading 
+- Bulk load.
+  - It copy command which use for batch processing.
+  - Batch loading already available in cloud storage or interna l storage
+  - Copy command use virtual warehouse which need to manage manually
+  - Allow basic transformations such as re-ordering columns, excluding columns, data typing, truncations string.
+  - COPY INTO command is common mechanism to load data in bulk in snowflakes.
+  
+- Continuous Load-:
+  - Snowpipe use for loading streaming data
+  - Uses a serveless architecture scalling is automatic.
+  - Doesn't use the virtual warehouse compute resources.
+  
+- External Tables (Data Lake)
+  - External tables enable querying existing data stored in external cloud storage for analysis without first loading it into Snowflake. The source of truth for the data remains in the external cloud storage. Data sets materialized in Snowflake via materialized views are read-only.
+
+### Continuous Loading Using Snowpipe
+- Real time data update
+- Snowpipe uses compute resources provided by Snowflake (i.e. a serverless compute model). These Snowflake-provided resources are automatically resized and scaled up or down as required, and are charged and itemized using per-second billing. Data ingestion is charged based upon the actual workloads.
+
