@@ -51,3 +51,75 @@ Snowflake is different from AWS in the sense that it does not provide a comprehe
 - Real time data update
 - Snowpipe uses compute resources provided by Snowflake (i.e. a serverless compute model). These Snowflake-provided resources are automatically resized and scaled up or down as required, and are charged and itemized using per-second billing. Data ingestion is charged based upon the actual workloads.
 
+### Time Travel
+
+In snowflakes we can undo the accidental changes upto 90days in enterprise edition and 1 day in standard edition.
+- UTC(Universal Coordinate time)
+**example**
+```
+-- undropping a table
+DROP TABLE CUSTOMER;
+SELECT * FROM CUSTOMER;
+
+UNDROP TABLE CUSTOMER;
+SELECT * FROM CUSTOMER;
+SELECT COUNT(*) FROM CUSTOMER;
+
+-- undropping a schema
+DROP SCHEMA PROD_CRM.PUBLIC;
+SELECT * FROM CUSTOMER;
+
+UNDROP SCHEMA PROD_CRM.PUBLIC;
+SELECT * FROM CUSTOMER;
+SELECT COUNT(*) FROM CUSTOMER;
+
+-- undropping a database
+DROP DATABASE PROD_CRM;
+SELECT * FROM CUSTOMER;
+
+UNDROP DATABASE PROD_CRM;
+SELECT * FROM CUSTOMER;
+SELECT COUNT(*) FROM CUSTOMER;
+```
+### Metadata [Refer](geeksforgeeks.org/metadata-in-dbms-and-its-types/)
+Metadata is simply defined as data about data. It means it is a description and context of the data. It helps to organize, find and understand data.
+
+### FailSafe Sql
+```
+
+-- you can check storage usage through the ACCOUNT_USAGE.STORAGE_USAGE
+-- view which will give you information about storage used by data,
+-- storage used by internal stages & storage used by failsafe
+
+SELECT * FROM SNOWFLAKE.ACCOUNT_USAGE.STORAGE_USAGE ORDER BY USAGE_DATE DESC;
+
+-- let's convert the above information into GBs
+SELECT 	USAGE_DATE, 
+		STORAGE_BYTES / (1024*1024*1024) AS STORAGE_GB,  
+		STAGE_BYTES / (1024*1024*1024) AS STAGE_GB,
+		FAILSAFE_BYTES / (1024*1024*1024) AS FAILSAGE_GB
+
+FROM SNOWFLAKE.ACCOUNT_USAGE. ORDER BY USAGE_DATE DESC;
+
+
+
+-- You can also check on failsafe storage usage by querying the 
+-- TABLE_STORAGE_METRICS view
+SELECT * FROM SNOWFLAKE.ACCOUNT_USAGE.TABLE_STORAGE_METRICS;
+
+--let's improve the result & convert to GBs as well
+SELECT 	ID, 
+		TABLE_NAME, 
+		TABLE_SCHEMA,
+		ACTIVE_BYTES / (1024*1024*1024) AS STORAGE_USED_GB,
+		TIME_TRAVEL_BYTES / (1024*1024*1024) AS TIME_TRAVEL_STORAGE_USED_GB,
+		FAILSAFE_BYTES / (1024*1024*1024) AS FAILSAFE_STORAGE_USED_GB
+	
+	
+FROM SNOWFLAKE.ACCOUNT_USAGE.TABLE_STORAGE_METRICS
+	
+ORDER BY STORAGE_USED_GB DESC,TIME_TRAVEL_STORAGE_USED_GB DESC, FAILSAFE_STORAGE_USED_GB DESC;
+```
+
+### Zero Copy Cloning
+- Cloning is the process of creating exact copy of data, metadata operation doesn't actually copy the data it take a snapshot and modification of original and clone table are independent to each other.
